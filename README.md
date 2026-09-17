@@ -20,7 +20,7 @@ The original project, **FeelReel**, built a large-scale benchmark dataset of 450
 Reddit (image posts + comments)
         │
         ▼
-[1] Scraper           — public JSON API, no credentials needed
+[1] Scraper           — PRAW, requires free Reddit API credentials
         │
         ▼
 [2] GoEmotions        — 28 fine-grained emotion labels per comment
@@ -61,6 +61,14 @@ cd feelreel-mini
 pip install -r requirements.txt
 ```
 
+**Reddit API credentials (required for scraping):**
+```bash
+# 1. Go to https://www.reddit.com/prefs/apps → "create another app" → type: script
+# 2. Set environment variables:
+export REDDIT_CLIENT_ID=your_client_id
+export REDDIT_CLIENT_SECRET=your_client_secret
+```
+
 **For LLaVA stimulus extraction (optional):**
 ```bash
 brew install ollama
@@ -89,7 +97,7 @@ python run_pipeline.py --with-stimulus
 
 | Component | Tool |
 |---|---|
-| Reddit scraping | Public JSON API (no auth) |
+| Reddit scraping | PRAW (requires free Reddit API credentials) |
 | Emotion labeling | `SamLowe/roberta-base-go_emotions` (RoBERTa, 28 labels) |
 | Emotion stimulus | LLaVA 7B via Ollama (Metal GPU on Apple Silicon) |
 | Visualization | matplotlib, seaborn |
