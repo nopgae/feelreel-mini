@@ -85,12 +85,21 @@ def _build_sample_data() -> tuple[pd.DataFrame, pd.DataFrame]:
 def run(
     skip_scrape: bool = False,
     demo: bool = False,
+    real_data: bool = False,
     with_stimulus: bool = False,
 ) -> None:
     # ── Step 1: Data ──────────────────────────────────────────────────────────
     if demo:
         print("\n[1/4] Using built-in sample data (demo mode)...")
         df_posts, df_comments = _build_sample_data()
+    elif real_data:
+        print("\n[1/4] Loading GoEmotions dataset (211K real Reddit comments)...")
+        from scraper.goemotions_loader import load
+        df_posts, df_comments = load(
+            n_comments=5000,
+            output_comments=COMMENTS_CSV,
+            output_posts=POSTS_CSV,
+        )
     elif skip_scrape:
         print("\n[1/4] Loading existing scraped data...")
         df_posts = pd.read_csv(POSTS_CSV)
@@ -127,11 +136,14 @@ def run(
     from analysis.visualize import (
         plot_emotion_distribution,
         plot_subreddit_emotion_heatmap,
+        plot_model_vs_human,
         save_sample_outputs,
         print_stats,
     )
     plot_emotion_distribution(df_labeled)
     plot_subreddit_emotion_heatmap(df_labeled, df_posts)
+    if "human_label" in df_labeled.columns:
+        plot_model_vs_human(df_labeled)
     save_sample_outputs(df_labeled, df_posts)
     print_stats(df_labeled, df_posts)
 
@@ -152,5 +164,14 @@ if __name__ == "__main__":
         "--with-stimulus", action="store_true",
         help="Run LLaVA emotion stimulus extraction (requires Ollama + llava model)",
     )
+    parser.add_argument(
+        "--real-data", action="store_true",
+        help="Load 5K real Reddit comments from GoEmotions dataset (HuggingFace, no credentials)",
+    )
     args = parser.parse_args()
-    run(skip_scrape=args.skip_scrape, demo=args.demo, with_stimulus=args.with_stimulus)
+    run(
+        skip_scrape=args.skip_scrape,
+        demo=args.demo,
+        real_data=args.real_data,
+        with_stimulus=args.with_stimulus,
+    )

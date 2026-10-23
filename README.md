@@ -1,16 +1,19 @@
 # FeelReel-Mini: Multimodal Emotion Understanding Pipeline
 
-A personal recreation of the data curation pipeline I contributed to as a Research Assistant on a multimodal emotion understanding project submitted to CVPR 2024.
+A small-scale personal recreation of the data pipeline behind **FeelReel**, a multimodal emotion dataset project I worked on as a Research Assistant at Penn State (Jun 2024 – Mar 2025).
 
-The original project, **FeelReel**, built a large-scale benchmark dataset of 450,000+ Reddit images with 5M+ user comments annotated with fine-grained emotion labels, emotion stimuli, and regions of interest. This repository reproduces the core pipeline at a smaller scale using publicly available tools and data.
+> **This is not the lab's code or data.** This is a separate personal project built with public tools (PRAW, a public GoEmotions RoBERTa checkpoint, LLaVA via Ollama) to show how the pipeline works at a small scale. The original dataset and code are not public.
 
----
+## About the Original Project
 
-## My Contributions to the Original Project
+FeelReel is a benchmark of 400K+ Reddit images with 5M+ user comments, annotated with emotion labels and visually grounded explanations without human annotators. An earlier version of the paper was submitted to CVPR 2024 (before I joined); it has not been published. I joined during the follow-up phase.
 
-- **Reddit data collection** — designed and ran the scraping pipeline across 1,300+ subreddits
-- **Human evaluation (MTurk)** — designed the survey instrument, recruited participants, and analyzed results comparing generated vs. real comments
-- **Downstream experiments** — ran transfer learning evaluations on emotion classification datasets (ArtPhoto, Emotion6, EmoSet)
+## My Role
+
+- **Data collection & organization** — sourced Reddit image posts and comments through the project's collection pipeline and organized them into structured datasets
+- **Human evaluation (MTurk)** — built the MTurk survey (HIT) page and collected human evaluation responses on the dataset's emotion annotations through it
+
+I did not train or fine-tune the project's models, and the experiments in the original paper predate my involvement.
 
 ---
 
@@ -35,7 +38,7 @@ Reddit (image posts + comments)
 This mirrors the attribute extraction pipeline from the original project:
 - **GoEmotions** for pseudo emotion labeling
 - **LLaVA** for emotion stimulus extraction via visual question answering
-- Visualization matching the distribution analysis in the original paper
+- Distribution charts in the style of the original project's analysis
 
 ---
 
@@ -49,7 +52,7 @@ Emotion patterns vary meaningfully by community:
 
 ![Subreddit Heatmap](sample_outputs/subreddit_emotion_heatmap.png)
 
-Key finding: visual subreddits (r/earthporn, r/woodworking) skew toward **admiration** and **surprise**, while pet communities (r/rarepuppers) show more **joy** — consistent with the original FeelReel paper's finding that emotion distributions align strongly with content type. Running on the full Reddit dataset amplifies these patterns further.
+Key finding: visual subreddits (r/earthporn, r/woodworking) skew toward **admiration** and **surprise**, while pet communities (r/rarepuppers) show more **joy** — which is the kind of content-dependent pattern FeelReel was designed to capture. This is a small demo run, so treat it as illustrative rather than a finding.
 
 ---
 

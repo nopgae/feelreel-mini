@@ -78,7 +78,10 @@ def plot_subreddit_emotion_heatmap(
 ) -> None:
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    df = df_labeled.merge(df_posts[["post_id", "subreddit"]], on="post_id", how="left")
+    if "subreddit" in df_labeled.columns:
+        df = df_labeled.copy()
+    else:
+        df = df_labeled.merge(df_posts[["post_id", "subreddit"]], on="post_id", how="left")
     pivot = (
         df.groupby(["subreddit", "emotion"])
         .size()
@@ -105,6 +108,40 @@ def plot_subreddit_emotion_heatmap(
     ax.set_ylabel("")
     plt.xticks(rotation=40, ha="right", fontsize=9)
     plt.yticks(fontsize=9)
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close()
+    print(f"  Saved → {output_path}")
+
+
+def plot_model_vs_human(
+    df_labeled: pd.DataFrame,
+    output_path: Path = Path("outputs/model_vs_human.png"),
+    top_n: int = 15,
+) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    model_dist = df_labeled["emotion"].value_counts(normalize=True) * 100
+    human_dist = df_labeled["human_label"].value_counts(normalize=True) * 100
+
+    top_emotions = model_dist.head(top_n).index.tolist()
+    x = range(len(top_emotions))
+
+    fig, ax = plt.subplots(figsize=(14, 5))
+    width = 0.38
+    ax.bar([i - width / 2 for i in x], [model_dist.get(e, 0) for e in top_emotions],
+           width=width, label="Model (RoBERTa)", color="#1976D2", alpha=0.85)
+    ax.bar([i + width / 2 for i in x], [human_dist.get(e, 0) for e in top_emotions],
+           width=width, label="Human labels", color="#FF7043", alpha=0.85)
+
+    ax.set_xticks(list(x))
+    ax.set_xticklabels(top_emotions, rotation=40, ha="right", fontsize=9)
+    ax.set_ylabel("Percentage (%)", fontsize=11)
+    ax.set_title("Model Predictions vs. Human Labels — GoEmotions Dataset\n(Top 15 emotions)", fontsize=13)
+    ax.legend(fontsize=10)
+    ax.yaxis.grid(True, linestyle="--", alpha=0.5)
+    ax.set_axisbelow(True)
+
     plt.tight_layout()
     plt.savefig(output_path, dpi=150, bbox_inches="tight")
     plt.close()
