@@ -42,17 +42,22 @@ This mirrors the attribute extraction pipeline from the original project:
 
 ---
 
-## Results
+## Sample Output
 
-Emotion distribution across image-heavy subreddits (demo run, 8 subreddits):
+The charts below come from `--demo` mode, which runs the real GoEmotions model on **24 hand-written example comments** (3 per subreddit, 8 subreddits). They show what the pipeline produces, not a finding about Reddit — with 3 comments per row, every cell is 0%, 33%, 67% or 100%.
 
 ![Emotion Distribution](sample_outputs/emotion_distribution.png)
 
-Emotion patterns vary meaningfully by community:
-
 ![Subreddit Heatmap](sample_outputs/subreddit_emotion_heatmap.png)
 
-Key finding: visual subreddits (r/earthporn, r/woodworking) skew toward **admiration** and **surprise**, while pet communities (r/rarepuppers) show more **joy** — which is the kind of content-dependent pattern FeelReel was designed to capture. This is a small demo run, so treat it as illustrative rather than a finding.
+For real comments without Reddit API credentials, use `--real-data` (5K comments from the public GoEmotions dataset, which also carries human labels to compare against).
+
+## Limitations
+
+- The committed charts are from the 24-comment demo, so they illustrate the output format only.
+- GoEmotions labels are model predictions (single top label per comment), not human annotations.
+- Reddit scraping needs your own API credentials, and Reddit's API terms limit what can be redistributed, so no scraped data is committed.
+- LLaVA stimulus extraction is qualitative and was not evaluated against human judgments.
 
 ---
 
@@ -84,7 +89,13 @@ ollama serve   # run in a separate terminal
 ## Usage
 
 ```bash
-# Full pipeline: scrape → label → visualize
+# No credentials: built-in 24-comment demo
+python run_pipeline.py --demo
+
+# No credentials: 5K real comments from the GoEmotions dataset (HuggingFace)
+python run_pipeline.py --real-data
+
+# Full pipeline: scrape → label → visualize (needs Reddit credentials)
 python run_pipeline.py
 
 # Skip re-scraping (reuse saved data)
@@ -115,8 +126,9 @@ feelreel-mini/
 ├── annotation/           # GoEmotions pseudo-labeling
 ├── stimulus/             # LLaVA visual emotion stimulus extraction
 ├── analysis/             # Charts and sample output generation
+├── sample_outputs/       # Charts from a --demo run (committed)
 ├── data/                 # Collected data (gitignored)
-└── outputs/              # Generated charts and tables
+└── outputs/              # Generated charts and tables (gitignored)
 ```
 
 ---
